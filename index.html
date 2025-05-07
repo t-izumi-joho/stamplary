@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校内スタンプラリー</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; text-align: center; }
+    .stamp { font-size: 2em; margin: 0.5em; }
+    .btn { margin: 1em; padding: 1em 2em; font-size: 1em; cursor: pointer; }
+  </style>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+  <h1>🎉 校内スタンプラリー 🎉</h1>
+  <button class="btn" onclick="goToStamps()">スタンプ帳を見る</button>
+  <button class="btn" onclick="startScan()">QRコードを読み取る</button>
+
+  <div id="stamp-area" style="display:none">
+    <h2>📖 スタンプ帳</h2>
+    <div id="stamps"></div>
+    <button class="btn" onclick="goHome()">ホームに戻る</button>
+  </div>
+
+  <div id="scanner" style="width: 300px; margin: auto; display:none;"></div>
+  <div id="result"></div>
+
+  <script>
+    const stampList = ["roomA", "roomB", "roomC"];
+
+    function goToStamps() {
+      document.getElementById('stamp-area').style.display = 'block';
+      document.getElementById('scanner').style.display = 'none';
+      renderStamps();
+    }
+
+    function goHome() {
+      document.getElementById('stamp-area').style.display = 'none';
+      document.getElementById('result').innerText = '';
+    }
+
+    function renderStamps() {
+      const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
+      const container = document.getElementById("stamps");
+      container.innerHTML = "";
+      stampList.forEach(id => {
+        const got = stamps.includes(id);
+        container.innerHTML += `<div class="stamp">${got ? "✅" : "⬜️"} ${id}</div>`;
+      });
+    }
+
+    function startScan() {
+      document.getElementById('scanner').style.display = 'block';
+      document.getElementById('stamp-area').style.display = 'none';
+      const qrScanner = new Html5Qrcode("scanner");
+      qrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        qrCodeMessage => {
+          qrScanner.stop();
+          document.getElementById('scanner').style.display = 'none';
+          const url = new URL(qrCodeMessage);
+          const stampId = url.searchParams.get("stamp");
+          if (stampList.includes(stampId)) {
+            let stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
+            if (!stamps.includes(stampId)) {
+              stamps.push(stampId);
+              localStorage.setItem("stamps", JSON.stringify(stamps));
+              document.getElementById('result').innerText = `✅ ${stampId} をゲット！`;
+            } else {
+              document.getElementById('result').innerText = `${stampId} は既に取得済みです。`;
+            }
+          } else {
+            document.getElementById('result').innerText = `無効なQRコードです。`;
+          }
+        },
+        errorMessage => {
+          // console.log(errorMessage);
+        }
+      ).catch(err => {
+        console.error("カメラ起動エラー", err);
+      });
+    }
+    <!-- 追加: スタンプ帳内にリセットボタン -->
+<div id="stamp-area" style="display:none">
+  <h2>📖 スタンプ帳</h2>
+  <div id="stamps"></div>
+  <button class="btn" onclick="resetStamps()">スタンプをリセット</button>
+  <button class="btn" onclick="goHome()">ホームに戻る</button>
+</div>
+
+  </script>
+</body>
+</html>
