@@ -27,7 +27,11 @@
 
   <script>
     const stampList = ["roomA", "roomB", "roomC"];
-
+    const stampImages = {
+      roomA: "img/roomA.png",
+      roomB: "img/roomB.png",
+      roomC: "img/roomC.png"
+    };
     function goToStamps() {
       document.getElementById('stamp-area').style.display = 'block';
       document.getElementById('scanner').style.display = 'none';
@@ -39,16 +43,35 @@
       document.getElementById('result').innerText = '';
     }
 
+    // function renderStamps() {
+    //   const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
+    //   const container = document.getElementById("stamps");
+    //   container.innerHTML = "";
+    //   stampList.forEach(id => {
+    //     const got = stamps.includes(id);
+    //     container.innerHTML += `<div class="stamp">${got ? "✅" : "⬜️"} ${id}</div>`;
+    //   });
+    // }
     function renderStamps() {
       const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
       const container = document.getElementById("stamps");
       container.innerHTML = "";
+
       stampList.forEach(id => {
         const got = stamps.includes(id);
-        container.innerHTML += `<div class="stamp">${got ? "✅" : "⬜️"} ${id}</div>`;
-      });
+        if (got) {
+          container.innerHTML += `
+          <div class="stamp">
+            <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
+          </div>`;
+        } else {
+          container.innerHTML += `
+        <div class="stamp">
+          ⬜️ ${id}
+        </div>`;
     }
-
+  });
+}
     function startScan() {
       document.getElementById('scanner').style.display = 'block';
       document.getElementById('stamp-area').style.display = 'none';
@@ -81,7 +104,7 @@
         console.error("カメラ起動エラー", err);
       });
     }
-
+ 
   </script>
 </body>
 </html>
