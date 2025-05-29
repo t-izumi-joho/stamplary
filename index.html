@@ -77,7 +77,11 @@
         <div class="stamp">
           ⬜️ ${id}
         </div>`;
-        }  
+        } 
+  // 10個全部集まったらお祝いメッセージを表示
+  if (collected === stampList.length) {
+    container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
+  }
   });
 
  
