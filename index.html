@@ -63,10 +63,11 @@
       const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
       const container = document.getElementById("stamps");
       container.innerHTML = "";
-
+　　　 let collected = 0;
       stampList.forEach(id => {
         const got = stamps.includes(id);
         if (got) {
+          collected++;
           container.innerHTML += `
           <div class="stamp">
             <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
@@ -77,22 +78,14 @@
           ⬜️ ${id}
         </div>`;
     }
-  
-  });
-  const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
-  const container = document.getElementById("stamps");
-  container.innerHTML = "";
-  let collected = 0;
-  stampList.forEach(id => {
-    const got = stamps.includes(id);
-    if (got) collected++;
-    container.innerHTML += `<div class="stamp">${got ? "✅" : "⬜️"} ${id}</div>`;
-  });
-
-  // 10個全部集まったらお祝いメッセージを表示
+         // 10個全部集まったらお祝いメッセージを表示
   if (collected === stampList.length) {
     container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
   }
+  
+  });
+
+ 
 }
     function startScan() {
       document.getElementById('scanner').style.display = 'block';
