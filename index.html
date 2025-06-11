@@ -27,20 +27,21 @@
 
   <script>
     const stampList = [
-      "靴脱場", "音楽室前 (扉)", "理科室前 (扉)", 
-      "3年11組（3号館2F）", "3年9組模擬店", "体育館（入口）", 
+      "靴脱場", "音楽室前 (扉)", "問題-1",
+      "3年11組（3号館2F）", "3年9組模擬店", "体育館（入口）",
       "2年9組（本館8F）", "図書室前 (問題)", "roomJ"
     ];
 
     const stampImages = {
       "靴脱場": "img/roomA.png",
       "音楽室前 (扉)": "img/roomB.png",
-      "問題-1": "img/roomC.png",  // ✅ 正しくリンクする画像に修正！
+      "問題-1": "img/roomC.png",
+      "理科室前 (扉)": "img/roomC.png", // 問題-1取得後に表示する名前と画像
       "3年11組（3号館2F）": "img/roomD.png",
       "3年9組模擬店": "img/roomE.png",
       "体育館（入口）": "img/roomF.png",
       "2年9組（本館8F）": "img/roomG.png",
-      "問題-2": "img/roomH.png",
+      "図書室前 (問題)": "img/roomH.png",
       "roomJ": "img/roomJ.png"
     };
 
@@ -55,40 +56,49 @@
       document.getElementById('result').innerText = '';
     }
 
-   function renderStamps() {
-  const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
-  const container = document.getElementById("stamps");
-  container.innerHTML = "";
-  let collected = 0;
+    function renderStamps() {
+      const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
+      const container = document.getElementById("stamps");
+      container.innerHTML = "";
+      let collected = 0;
 
-  stampList.forEach(id => {
-    const got = stamps.includes(id);
+      stampList.forEach(id => {
+        const got = stamps.includes(id);
+        let displayName = id;
+        let imageSrc = stampImages[id] || 'img/default.png';
 
-    if (got) {
-      collected++;
-      container.innerHTML += `
-        <div class="stamp">
-          <img src="${stampImages[id] || 'img/default.png'}" alt="${id}" style="height:100px;"><br>
-          ✅ ${id}
-        </div>`;
-    } else {
-      let labelHtml = id;
-      if (id === "問題-1") {
-        labelHtml = `<a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">${id}</a>`;
+        if (id === "問題-1") {
+          if (got) {
+            displayName = "理科室前 (扉)";
+            imageSrc = stampImages[displayName] || imageSrc;
+          } else {
+            container.innerHTML += `
+              <div class="stamp">
+                ⬜️ <a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">問題-1</a>
+              </div>`;
+            return; // 処理スキップ（下の通常ロジックを実行しない）
+          }
+        }
+
+        if (got) {
+          collected++;
+          container.innerHTML += `
+            <div class="stamp">
+              <img src="${imageSrc}" alt="${displayName}" style="height:100px;"><br>
+              ✅ ${displayName}
+            </div>`;
+        } else {
+          container.innerHTML += `
+            <div class="stamp">
+              ⬜️ ${displayName}
+            </div>`;
+        }
+      });
+
+      if (collected === stampList.length) {
+        container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
       }
-
-      container.innerHTML += `
-        <div class="stamp">
-          ⬜️ ${labelHtml}
-        </div>`;
     }
-  });
-
-  if (collected === stampList.length) {
-    container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
-  }
-}
-
 
     function startScan() {
       document.getElementById('scanner').style.display = 'block';
@@ -101,8 +111,15 @@
         qrCodeMessage => {
           qrScanner.stop();
           document.getElementById('scanner').style.display = 'none';
-          const url = new URL(qrCodeMessage);
-          const stampId = url.searchParams.get("stamp");
+
+          let stampId;
+          try {
+            const url = new URL(qrCodeMessage);
+            stampId = url.searchParams.get("stamp");
+          } catch {
+            stampId = qrCodeMessage; // プレーンテキスト対応
+          }
+
           if (stampList.includes(stampId)) {
             let stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
             if (!stamps.includes(stampId)) {
@@ -117,7 +134,7 @@
           }
         },
         errorMessage => {
-          // 無視
+          // エラーは無視または表示してもよい
         }
       ).catch(err => {
         console.error("カメラ起動エラー", err);
