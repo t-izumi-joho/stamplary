@@ -65,22 +65,29 @@
         const got = stamps.includes(id);
         if (got) {
           collected++;
+
           if (id === "問題-1") {
-        container.innerHTML += `
-          <div class="stamp">
-            <a href="img/問題-1.png" target="_blank">
-              <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
-            </a>
-          </div>`;
-      } else {
-        container.innerHTML += `
-          <div class="stamp">
-            <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
-          </div>`;
-      }
+            container.innerHTML += `
+              <div class="stamp">
+                <a href="img/問題-1.png" target="_blank">
+                  <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
+                </a>
+              </div>`;
+          } else {
+            container.innerHTML += `
+              <div class="stamp">
+                <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
+              </div>`;
+          }
+
+        } else {
+          container.innerHTML += `
+            <div class="stamp">
+              ⬜️ ${id}
+            </div>`;
+        }
       });
 
-      // 9個全部集まったらお祝いメッセージを表示
       if (collected === stampList.length) {
         container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
       }
@@ -90,7 +97,7 @@
       document.getElementById('scanner').style.display = 'block';
       document.getElementById('stamp-area').style.display = 'none';
       const qrScanner = new Html5Qrcode("scanner");
-      
+
       qrScanner.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: 250 },
@@ -113,7 +120,7 @@
           }
         },
         errorMessage => {
-          // console.log(errorMessage);
+          // 無視
         }
       ).catch(err => {
         console.error("カメラ起動エラー", err);
