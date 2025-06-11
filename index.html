@@ -35,7 +35,7 @@
     const stampImages = {
       "靴脱場": "img/roomA.png",
       "音楽室前 (扉)": "img/roomB.png",
-      "問題-1": "img/roomC.png",
+      "問題-1": "img/問題-1.png",  // 🔴 修正：ここを roomC.png → 問題-1.png に変更
       "3年11組（3号館2F）": "img/roomD.png",
       "3年9組模擬店": "img/roomE.png",
       "体育館（入口）": "img/roomF.png",
@@ -66,20 +66,16 @@
         if (got) {
           collected++;
 
-          if (id === "問題-1") {
-            container.innerHTML += `
-              <div class="stamp">
-                <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
-                <a href="img/問題-1.png" target="_blank">${id}</a>
-              </div>`;
-          } else {
-            container.innerHTML += `
-              <div class="stamp">
-                <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
-                ${id}
-              </div>`;
-          }
+          // 🔵 「問題-1」のテキスト部分だけリンクにする
+          const labelHtml = id === "問題-1"
+            ? `<a href="img/問題-1.png" target="_blank">${id}</a>`
+            : id;
 
+          container.innerHTML += `
+            <div class="stamp">
+              <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
+              ${labelHtml}
+            </div>`;
         } else {
           container.innerHTML += `
             <div class="stamp">
