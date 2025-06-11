@@ -69,14 +69,14 @@
           if (id === "問題-1") {
             container.innerHTML += `
               <div class="stamp">
-                <a href="img/問題-1.png" target="_blank">
-                  <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
-                </a>
+                <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
+                <a href="img/問題-1.png" target="_blank">${id}</a>
               </div>`;
           } else {
             container.innerHTML += `
               <div class="stamp">
-                <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
+                <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
+                ${id}
               </div>`;
           }
 
@@ -120,7 +120,7 @@
           }
         },
         errorMessage => {
-          // 無視
+          // エラーは無視
         }
       ).catch(err => {
         console.error("カメラ起動エラー", err);
