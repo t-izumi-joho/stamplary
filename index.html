@@ -55,40 +55,40 @@
       document.getElementById('result').innerText = '';
     }
 
-    function renderStamps() {
-      const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
-      const container = document.getElementById("stamps");
-      container.innerHTML = "";
-      let collected = 0;
+   function renderStamps() {
+  const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
+  const container = document.getElementById("stamps");
+  container.innerHTML = "";
+  let collected = 0;
 
-      stampList.forEach(id => {
-        const got = stamps.includes(id);
-        
-        if (got) {
-          collected++;
-        } else {
-          alert(id);
-          var labelHtml;=
-          if id === "問題-1"{
-            ? `<a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">${id}</a>`
-            : id;
-          container.innerHTML += `
-            <div class="stamp">
-              <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
-              ${labelHtml}
-            </div>`;
-          }
-          container.innerHTML += `
-            <div class="stamp">
-              ⬜️ ${id}
-            </div>`;
-        }
-      });
+  stampList.forEach(id => {
+    const got = stamps.includes(id);
 
-      if (collected === stampList.length) {
-        container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
+    if (got) {
+      collected++;
+      container.innerHTML += `
+        <div class="stamp">
+          <img src="${stampImages[id] || 'img/default.png'}" alt="${id}" style="height:100px;"><br>
+          ✅ ${id}
+        </div>`;
+    } else {
+      let labelHtml = id;
+      if (id === "問題-1") {
+        labelHtml = `<a href="${stampImages[id]}" target="_blank" style="color:blue; text-decoration:underline;">${id}</a>`;
       }
+
+      container.innerHTML += `
+        <div class="stamp">
+          ⬜️ ${labelHtml}
+        </div>`;
     }
+  });
+
+  if (collected === stampList.length) {
+    container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
+  }
+}
+
 
     function startScan() {
       document.getElementById('scanner').style.display = 'block';
