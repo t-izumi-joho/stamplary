@@ -64,11 +64,12 @@
       stampList.forEach(id => {
         const got = stamps.includes(id);
         
-        alert(got);
         if (got) {
           collected++;
-　　　　　 alert(id);
-          const labelHtml = id === "問題-1"
+        } else {
+          alert(id);
+          var labelHtml;=
+          if id === "問題-1"{
             ? `<a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">${id}</a>`
             : id;
           container.innerHTML += `
@@ -76,7 +77,7 @@
               <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
               ${labelHtml}
             </div>`;
-        } else {
+          }
           container.innerHTML += `
             <div class="stamp">
               ⬜️ ${id}
