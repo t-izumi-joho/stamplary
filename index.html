@@ -56,34 +56,38 @@
     }
 
     function renderStamps() {
-      const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
-      const container = document.getElementById("stamps");
-      container.innerHTML = "";
-      let collected = 0;
+  const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
+  const container = document.getElementById("stamps");
+  container.innerHTML = "";
+  let collected = 0;
 
-      stampList.forEach(id => {
-        const got = stamps.includes(id);
-        if (got) {
-          collected++;
+  stampList.forEach(id => {
+    const got = stamps.includes(id);
+    if (got) {
+      collected++;
 
-          // 🔵 「問題-1」のテキスト部分だけリンクにする
-          const labelHtml = id === "問題-1"
-            ? `<a href="img/問題-1.png" target="_blank">${id}</a>`
-            : id;
-            alert("問題-1");
+      // 問題-1 のときはラベルにリンクを貼る
+      const labelHtml = id === "問題-1"
+        ? `<a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">${id}</a>`
+        : id;
 
-          container.innerHTML += `
-            <div class="stamp">
-              <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
-              ${labelHtml}
-            </div>`;
-        } else {
-          container.innerHTML += `
-            <div class="stamp">
-              ⬜️ ${id}
-            </div>`;
-        }
-      });
+      container.innerHTML += `
+        <div class="stamp">
+          <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
+          ${labelHtml}
+        </div>`;
+    } else {
+      container.innerHTML += `
+        <div class="stamp">
+          ⬜️ ${id}
+        </div>`;
+    }
+  });
+
+  if (collected === stampList.length) {
+    container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
+  }
+}
 
       if (collected === stampList.length) {
         container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
