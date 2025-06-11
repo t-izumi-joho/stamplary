@@ -27,20 +27,21 @@
 
   <script>
     const stampList = [
-      "靴脱場", "音楽室前 (扉)", "理科室前 (扉) (問題)", "3年11組（3号館2F）",
-      "3年9組模擬店", "体育館（入口）", "2年9組（本館8F）", "図書室前 (問題)", "roomJ"
+      "靴脱場", "音楽室前 (扉)", "問題-1", 
+      "3年11組（3号館2F）", "3年9組模擬店", "体育館（入口）", 
+      "2年9組（本館8F）", "図書室前 (問題)", "roomJ"
     ];
 
     const stampImages = {
       "靴脱場": "img/roomA.png",
-      "音楽室前 (扉)": "https://example.com/images/roomB.png",
-      "理科室前 (扉) (問題)": "img/問題-1.png",  // ここが理科室前 (扉) (問題)の画像リンク
-      "3年11組（3号館2F）": "https://example.com/images/roomD.png",
-      "3年9組模擬店": "https://example.com/images/roomE.png",
-      "体育館（入口）": "https://example.com/images/roomF.png",
-      "2年9組（本館8F）": "https://example.com/images/roomG.png",
-      "図書室前 (問題)": "https://example.com/images/roomH.png",
-      "roomJ": "https://example.com/images/roomJ.png"
+      "音楽室前 (扉)": "img/roomB.png",
+      "問題-1": "img/roomC.png",
+      "3年11組（3号館2F）": "img/roomD.png",
+      "3年9組模擬店": "img/roomE.png",
+      "体育館（入口）": "img/roomF.png",
+      "2年9組（本館8F）": "img/roomG.png",
+      "問題-2": "img/roomH.png",
+      "roomJ": "img/roomJ.png"
     };
 
     function goToStamps() {
@@ -64,23 +65,10 @@
         const got = stamps.includes(id);
         if (got) {
           collected++;
-
-          if (id === "理科室前 (扉) (問題)") {
-            // 画像リンク付き
-            container.innerHTML += `
-              <div class="stamp">
-                <a href="javascript:void(0);" onclick="showImage('${stampImages[id]}')">✅ ${id}</a>
-              </div>
-              <div id="image-container-${id}" style="display:none;">
-                <img src="${stampImages[id]}" alt="${id}" style="height:200px;">
-              </div>`;
-          } else {
-            container.innerHTML += `
-              <div class="stamp">
-                <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
-              </div>`;
-          }
-
+          container.innerHTML += `
+            <div class="stamp">
+              <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
+            </div>`;
         } else {
           container.innerHTML += `
             <div class="stamp">
@@ -89,25 +77,17 @@
         }
       });
 
-      // 全てのスタンプが集まった場合の表示
+      // 9個全部集まったらお祝いメッセージを表示
       if (collected === stampList.length) {
         container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
       }
-    }
-
-    // 画像を表示する関数
-    function showImage(imageUrl) {
-      const imageContainers = document.querySelectorAll('[id^="image-container-"]');
-      imageContainers.forEach(container => container.style.display = 'none'); // 以前に表示された画像を非表示にする
-      
-      const imageContainer = document.getElementById(`image-container-${imageUrl}`);
-      imageContainer.style.display = 'block'; // クリックした画像を表示
     }
 
     function startScan() {
       document.getElementById('scanner').style.display = 'block';
       document.getElementById('stamp-area').style.display = 'none';
       const qrScanner = new Html5Qrcode("scanner");
+      
       qrScanner.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: 250 },
