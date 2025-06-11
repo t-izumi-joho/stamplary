@@ -27,22 +27,24 @@
 
   <script>
     const stampList = [
-      "靴脱場", "音楽室前 (扉)", "問題-1",
+      "靴脱場","2年7組（本館６F）", "音楽室前 (扉)", "問題-1",
       "3年11組（3号館2F）", "3年9組模擬店", "体育館（入口）",
-      "2年9組（本館8F）", "図書室前 (問題)", "roomJ"
+      "マルチホール前","2年9組（本館8F）", "問題-2",
     ];
 
     const stampImages = {
       "靴脱場": "img/roomA.png",
-      "音楽室前 (扉)": "img/roomB.png",
-      "問題-1": "img/roomC.png",
-      "理科室前 (扉)": "img/roomC.png", // 問題-1取得後に表示する名前と画像
-      "3年11組（3号館2F）": "img/roomD.png",
-      "3年9組模擬店": "img/roomE.png",
-      "体育館（入口）": "img/roomF.png",
-      "2年9組（本館8F）": "img/roomG.png",
-      "図書室前 (問題)": "img/roomH.png",
-      "roomJ": "img/roomJ.png"
+      "2年7組（本館６F）": "img/roomB.png",
+      "音楽室前 (扉)": "img/roomC.png",
+      "問題-1": "img/roomD.png",
+      "理科室前 (扉)": "img/roomD.png", // 問題-1取得後に表示する名前と画像
+      "3年11組（3号館2F）": "img/roomE.png",
+      "3年9組模擬店": "img/roomF.png",
+      "体育館（入口）": "img/roomG.png",
+      "マルチホール前": "img/roomH.png",
+      "2年9組（本館8F）": "img/roomI.png",
+      "問題-2": "img/roomJ.png",
+      "図書館前": "img/roomJ.png",
     };
 
     function goToStamps() {
@@ -75,6 +77,18 @@
             container.innerHTML += `
               <div class="stamp">
                 ⬜️ <a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">問題-1</a>
+              </div>`;
+            return; // 処理スキップ（下の通常ロジックを実行しない）
+          }
+        }
+        if (id === "問題-2") {
+          if (got) {
+            displayName = "図書館前";
+            imageSrc = stampImages[displayName] || imageSrc;
+          } else {
+            container.innerHTML += `
+              <div class="stamp">
+                ⬜️ <a href="img/問題-2.png" target="_blank" style="color:blue; text-decoration:underline;">問題-2</a>
               </div>`;
             return; // 処理スキップ（下の通常ロジックを実行しない）
           }
