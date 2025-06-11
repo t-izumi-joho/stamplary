@@ -65,16 +65,19 @@
         const got = stamps.includes(id);
         if (got) {
           collected++;
-          container.innerHTML += `
-            <div class="stamp">
+          if (id === "問題-1") {
+        container.innerHTML += `
+          <div class="stamp">
+            <a href="img/問題-1.png" target="_blank">
               <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
-            </div>`;
-        } else {
-          container.innerHTML += `
-            <div class="stamp">
-              ⬜️ ${id}
-            </div>`;
-        }
+            </a>
+          </div>`;
+      } else {
+        container.innerHTML += `
+          <div class="stamp">
+            <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>${id}
+          </div>`;
+      }
       });
 
       // 9個全部集まったらお祝いメッセージを表示
