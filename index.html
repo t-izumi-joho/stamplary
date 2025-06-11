@@ -63,20 +63,14 @@
 
       stampList.forEach(id => {
         const got = stamps.includes(id);
-        const labelHtml = id === "問題-1"
-            ? `<a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">${id}</a>`
-            : id;
-        container.innerHTML += `
-            <div class="stamp">
-              <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
-              ${labelHtml}
-            </div>`;
+        
         alert("PATH");
         if (got) {
           collected++;
 　　　　　 alert(id);
-          
-
+          const labelHtml = id === "問題-1"
+            ? `<a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">${id}</a>`
+            : id;
           container.innerHTML += `
             <div class="stamp">
               <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
