@@ -35,7 +35,7 @@
     const stampImages = {
       "靴脱場": "img/roomA.png",
       "音楽室前 (扉)": "img/roomB.png",
-      "問題-1": "img/roomC.png",  // 🔴 修正：ここを roomC.png → 問題-1.png に変更
+      "問題-1": "img/問題-1.png",  // ✅ 正しくリンクする画像に修正！
       "3年11組（3号館2F）": "img/roomD.png",
       "3年9組模擬店": "img/roomE.png",
       "体育館（入口）": "img/roomF.png",
@@ -56,38 +56,32 @@
     }
 
     function renderStamps() {
-  const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
-  const container = document.getElementById("stamps");
-  container.innerHTML = "";
-  let collected = 0;
+      const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
+      const container = document.getElementById("stamps");
+      container.innerHTML = "";
+      let collected = 0;
 
-  stampList.forEach(id => {
-    const got = stamps.includes(id);
-    if (got) {
-      collected++;
+      stampList.forEach(id => {
+        const got = stamps.includes(id);
+        if (got) {
+          collected++;
 
-      // 問題-1 のときはラベルにリンクを貼る
-      const labelHtml = id === "問題-1"
-        ? `<a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">${id}</a>`
-        : id;
+          const labelHtml = id === "問題-1"
+            ? `<a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">${id}</a>`
+            : id;
 
-      container.innerHTML += `
-        <div class="stamp">
-          <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
-          ${labelHtml}
-        </div>`;
-    } else {
-      container.innerHTML += `
-        <div class="stamp">
-          ⬜️ ${id}
-        </div>`;
-    }
-  });
-
-  if (collected === stampList.length) {
-    container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
-  }
-}
+          container.innerHTML += `
+            <div class="stamp">
+              <img src="${stampImages[id]}" alt="${id}" style="height:100px;"><br>
+              ${labelHtml}
+            </div>`;
+        } else {
+          container.innerHTML += `
+            <div class="stamp">
+              ⬜️ ${id}
+            </div>`;
+        }
+      });
 
       if (collected === stampList.length) {
         container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
@@ -121,7 +115,7 @@
           }
         },
         errorMessage => {
-          // エラーは無視
+          // 無視
         }
       ).catch(err => {
         console.error("カメラ起動エラー", err);
