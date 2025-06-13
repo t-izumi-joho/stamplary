@@ -1,39 +1,98 @@
 <!DOCTYPE html>
+
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
+  <link as="style"
+    href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
+    onload="this.rel='stylesheet'" rel="stylesheet" />
   <title>校内スタンプラリー</title>
-  <style>
-    body { font-family: sans-serif; padding: 1em; text-align: center; }
-    .stamp { font-size: 2em; margin: 0.5em; }
-    .btn { margin: 1em; padding: 1em 2em; font-size: 1em; cursor: pointer; }
-  </style>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style type="text/tailwindcss">
+    body {
+      height: 100dvh;
+      font-family: "Noto Sans", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro", "Meiryo", "メイリオ" sans-serif;
+    }
+    :root {
+      --primary-color: #2DD4BF;
+      --secondary-color: #E0F2F7;
+      --text-primary: #1F2937;
+      --text-secondary: #FFFFFF;
+      --background-color: #F0FDFA;
+    }
+  </style>
 </head>
-<body>
-  <h1>🎉 校内スタンプラリー 🎉</h1>
-  <button class="btn" onclick="goToStamps()">スタンプ帳を見る</button>
-  <button class="btn" onclick="startScan()">QRコードを読み取る</button>
 
-  <div id="stamp-area" style="display:none">
-    <h2>📖 スタンプ帳</h2>
-    <div id="stamps"></div>
-    <button class="btn" onclick="goHome()">ホームに戻る</button>
+<body class="bg-[var(--background-color)]">
+  <div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden">
+    <main class="flex flex-1 flex-col items-center justify-center p-4">
+      <div class="w-full max-w-md space-y-10 text-center">
+        <h1 class="text-[var(--text-primary)] text-4xl font-bold leading-tight tracking-tighter mb-16">🎉 校内スタンプラリー 🎉
+        </h1>
+        <div class="bg-white rounded-xl shadow-lg p-6 space-y-4 text-left" id="stamp-area">
+          <h2 class="text-xl font-semibold text-gray-700 mb-4">📖 スタンプ帳</h2>
+          <ul class="space-y-6" id="stamp-list">
+          </ul>
+        </div>
+        <p class="text-xl font-semibold text-[var(--text-primary)] mt-8 mb-4" id="complete-massege">🎉
+          全て集めました！おめでとうございます！ 🎉</p>
+        <div id="scanner" class="bg-white rounded-xl shadow-lg p-6 space-y-4 text-left w-[300px]"
+          style="width: 300px; margin: auto; position: relative;">
+          <video style="display: block;" muted="true"></video>
+          <canvas style="width: 300px; height: 225px; display: none;" id="qr-canvas" width="300" height="225"></canvas>
+          <div
+            style="display: none; position: absolute; top: 0px; z-index: 1; background: rgba(9, 9, 9, 0.46); color: rgb(255, 236, 236); text-align: center; width: 100%;">
+            Scanner paused
+          </div>
+        </div>
+        <p class="text-lg text-gray-600 mt-4" id="result"></p>
+        <div class="space-y-6">
+          <button
+            class="w-full transform cursor-pointer rounded-xl bg-[var(--primary-color)] px-6 py-4 text-lg font-semibold text-[var(--text-secondary)] shadow-md transition-transform duration-150 ease-in-out hover:scale-105 active:scale-95 hover:bg-teal-500 active:bg-teal-600"
+            id="view-stamps-button">
+            スタンプ帳を見る
+          </button>
+          <button
+            class="w-full transform cursor-pointer rounded-xl bg-[var(--primary-color)] px-6 py-4 text-lg font-semibold text-[var(--text-secondary)] shadow-md transition-transform duration-150 ease-in-out hover:scale-105 active:scale-95 hover:bg-teal-500 active:bg-teal-600"
+            id="back-home-button">
+            ホームに戻る
+          </button>
+          <button
+            class="w-full transform cursor-pointer rounded-xl bg-[var(--secondary-color)] px-6 py-4 text-lg font-semibold text-sky-700 shadow-md transition-transform duration-150 ease-in-out hover:scale-105 active:scale-95 hover:bg-blue-100 active:bg-blue-200"
+            id="scan-button">
+            QRコードを読み取る
+          </button>
+
+        </div>
+      </div>
+    </main>
   </div>
-
-  <div id="scanner" style="width: 300px; margin: auto; display:none;"></div>
-  <div id="result"></div>
-
   <script>
+    const scanner = document.getElementById("scanner");
+    const stampArea = document.getElementById("stamp-area");
+    const stampListUl = document.getElementById("stamp-list");
+    const completeMessage = document.getElementById("complete-massege");
+    const viewStampsButton = document.getElementById("view-stamps-button");
+    const backHomeButton = document.getElementById("back-home-button");
+    const scanButton = document.getElementById("scan-button");
+    const result = document.getElementById("result");
+    const absoluteAddr = "https://stamplary.vercel.app/";
+
+    const primaryButtonClass = "w-full transform cursor-pointer rounded-xl bg-[var(--primary-color)] px-6 py-4 text-lg font-semibold text-[var(--text-secondary)] shadow-md transition-transform duration-150 ease-in-out hover:scale-105 active:scale-95 hover:bg-teal-500 active:bg-teal-600"
+    const lightButtonClass = "w-full transform cursor-pointer rounded-xl bg-[var(--secondary-color)] px-6 py-4 text-lg font-semibold text-sky-700 shadow-md transition-transform duration-150 ease-in-out hover:scale-105 active:scale-95 hover:bg-blue-100 active:bg-blue-200"
+
     const stampList = [
-      "靴脱場","2年7組（本館６F）", "音楽室前 (扉)", "問題-1",
+      "脱靴場", "2年7組（本館６F）", "音楽室前 (扉)", "問題-1",
       "2年11組（3号館4F）", "3年9組模擬店", "体育館（入口）",
-      "マルチホール前","2年9組（本館8F）", "問題-2",
+      "マルチホール前", "2年9組（本館8F）", "問題-2",
     ];
 
     const stampImages = {
-      "靴脱場": "img/roomA.png",
+      "脱靴場": "img/roomA.png",
       "2年7組（本館６F）": "img/roomB.png",
       "音楽室前 (扉)": "img/roomC.png",
       "問題-1": "img/roomD.png",
@@ -48,37 +107,51 @@
     };
 
     function goToStamps() {
-      document.getElementById('stamp-area').style.display = 'block';
-      document.getElementById('scanner').style.display = 'none';
+      stampArea.style.display = 'block';
+      scanner.style.display = 'none';
+      completeMessage.style.display = 'none';
+      viewStampsButton.style.display = 'none';
+      backHomeButton.style.display = 'block';
+      backHomeButton.className = primaryButtonClass;
+      scanButton.style.display = 'none';
+      result.style.display = 'none';
+      stampListUl.innerHTML = '';
       renderStamps();
     }
 
     function goHome() {
-      document.getElementById('stamp-area').style.display = 'none';
+      stampArea.style.display = 'none';
+      scanner.style.display = 'none';
+      completeMessage.style.display = 'none';
+      viewStampsButton.style.display = 'block';
+      backHomeButton.style.display = 'none';
+      backHomeButton.className = primaryButtonClass;
+      scanButton.style.display = 'block';
+      result.style.display = 'none';
+
       document.getElementById('result').innerText = '';
     }
 
     function renderStamps() {
       const stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
-      const container = document.getElementById("stamps");
-      container.innerHTML = "";
       let collected = 0;
 
       stampList.forEach(id => {
         const got = stamps.includes(id);
         let displayName = id;
         let imageSrc = stampImages[id] || 'img/default.png';
+        let link = null;
 
         if (id === "問題-1") {
           if (got) {
             displayName = "理科室前 (扉)";
             imageSrc = stampImages[displayName] || imageSrc;
           } else {
-            container.innerHTML += `
-              <div class="stamp">
-                ⬜️ <a href="img/問題-1.png" target="_blank" style="color:blue; text-decoration:underline;">問題-1</a>
-              </div>`;
-            return; // 処理スキップ（下の通常ロジックを実行しない）
+            link = document.createElement('a');
+            link.href = absoluteAddr + "img/問題-1.png";
+            link.target = "_blank";
+            link.className = "text-sky-500";
+            link.textContent = "問題-1";
           }
         }
         if (id === "問題-2") {
@@ -86,37 +159,83 @@
             displayName = "図書館前";
             imageSrc = stampImages[displayName] || imageSrc;
           } else {
-            container.innerHTML += `
-              <div class="stamp">
-                ⬜️ <a href="img/問題-2.png" target="_blank" style="color:blue; text-decoration:underline;">問題-2</a>
-              </div>`;
-            return; // 処理スキップ（下の通常ロジックを実行しない）
+            link = document.createElement('a');
+            link.href = absoluteAddr + "img/問題-2.png";
+            link.target = "_blank";
+            link.className = "text-sky-500";
+            link.textContent = "問題-2";
           }
         }
 
         if (got) {
           collected++;
-          container.innerHTML += `
-            <div class="stamp">
-              <img src="${imageSrc}" alt="${displayName}" style="height:100px;"><br>
-              ✅ ${displayName}
-            </div>`;
+          const li = document.createElement('li');
+          li.className = 'flex flex-col items-center p-3 rounded-lg';
+
+          const img = document.createElement('img');
+          img.alt = displayName;
+          img.className = 'w-[100px] h-[100px] object-cover rounded-md mb-3';
+          img.src = absoluteAddr + imageSrc;
+
+          const div = document.createElement('div');
+          div.className = 'flex items-center w-full';
+
+          const spanIcon = document.createElement('span');
+          spanIcon.className = 'text-lg mr-3';
+          spanIcon.textContent = '✅';
+
+          const spanText = document.createElement('span');
+          spanText.className = 'text-gray-800';
+          spanText.textContent = displayName;
+
+          div.appendChild(spanIcon);
+          div.appendChild(spanText);
+          li.appendChild(img);
+          li.appendChild(div);
+
+          stampListUl.appendChild(li);
         } else {
-          container.innerHTML += `
-            <div class="stamp">
-              ⬜️ ${displayName}
-            </div>`;
+          const li = document.createElement('li');
+          li.className = 'flex flex-col items-center p-3 rounded-lg';
+
+          const div = document.createElement('div');
+          div.className = 'flex items-center w-full';
+
+          const spanIcon = document.createElement('span');
+          spanIcon.className = 'text-lg mr-3';
+          spanIcon.textContent = '⬜️';
+
+          div.appendChild(spanIcon);
+
+          if (id === "問題-1" || id === "問題-2") {
+            div.appendChild(link);
+          } else {
+            const spanText = document.createElement('span');
+            spanText.className = 'text-gray-800';
+            spanText.textContent = displayName;
+            div.appendChild(spanText);
+          }
+
+          li.appendChild(div);
+
+          stampListUl.appendChild(li);
         }
       });
 
       if (collected === stampList.length) {
-        container.innerHTML += `<h2 style="color: green; font-size: 1.5em;">🎉 全て集めました！おめでとうございます！ 🎉</h2>`;
+        completeMessage.style.display = 'block';
       }
     }
-
     function startScan() {
-      document.getElementById('scanner').style.display = 'block';
-      document.getElementById('stamp-area').style.display = 'none';
+      scanner.style.display = 'block';
+      stampArea.style.display = 'none';
+      completeMessage.style.display = 'none';
+      viewStampsButton.style.display = 'block';
+      backHomeButton.style.display = 'block';
+      backHomeButton.className = lightButtonClass;
+      result.innerHTML = '';
+
+      scanButton.style.display = 'none';
       const qrScanner = new Html5Qrcode("scanner");
 
       qrScanner.start(
@@ -124,7 +243,7 @@
         { fps: 10, qrbox: 250 },
         qrCodeMessage => {
           qrScanner.stop();
-          document.getElementById('scanner').style.display = 'none';
+          scanner.style.display = 'none';
 
           let stampId;
           try {
@@ -133,18 +252,18 @@
           } catch {
             stampId = qrCodeMessage; // プレーンテキスト対応
           }
-
+          result.style.display = 'block';
           if (stampList.includes(stampId)) {
             let stamps = JSON.parse(localStorage.getItem("stamps") || "[]");
             if (!stamps.includes(stampId)) {
               stamps.push(stampId);
               localStorage.setItem("stamps", JSON.stringify(stamps));
-              document.getElementById('result').innerText = `✅ ${stampId} をゲット！`;
+              result.innerText = `✅ ${stampId} をゲット！`;
             } else {
-              document.getElementById('result').innerText = `${stampId} は既に取得済みです。`;
+              result.innerText = `${stampId} は既に取得済みです。`;
             }
           } else {
-            document.getElementById('result').innerText = `無効なQRコードです。`;
+            result.innerText = `無効なQRコードです。`;
           }
         },
         errorMessage => {
@@ -154,6 +273,21 @@
         console.error("カメラ起動エラー", err);
       });
     }
+
+    viewStampsButton.addEventListener("click", goToStamps);
+    backHomeButton.addEventListener("click", goHome);
+    scanButton.addEventListener("click", startScan);
+
+    document.addEventListener("DOMContentLoaded", () => {
+      scanner.style.display = "none";
+      stampArea.style.display = "none";
+      completeMessage.style.display = "none";
+      backHomeButton.style.display = "none";
+      viewStampsButton.style.display = "block";
+      scanButton.style.display = "block";
+      result.style.display = "none";
+    });
   </script>
 </body>
+
 </html>
